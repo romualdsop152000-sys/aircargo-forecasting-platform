@@ -1,45 +1,36 @@
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
-*.pyc
 
-# Virtual environments
+# Virtual env
 venv/
-.env/
-.envrc
-.venv/
+
+# Environment variables
+.env
 
 # VSCode
 .vscode/
 
-# Jupyter
-.ipynb_checkpoints/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Env files
-.env
+# Pytest
+.pytest_cache/
 
 # Docker
-*.pid
-*.seed
-*.pid.lock
+*.log
 
-# Build
-build/
-dist/
-*.egg-info/
+# Credentials
+credentials.json
 
-# Others
-*.sqlite3
+# Mac/Linux
+.DS_Store
+
+# Database
 *.db
 
-# Ignore local data
-local_data/
+# Coverage
+htmlcov/
+.coverage
+
+# Jupyter
+.ipynb_checkpoints/
