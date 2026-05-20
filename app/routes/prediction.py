@@ -1,23 +1,23 @@
 import json
-from app.cache import redis_client
 
-from fastapi import  APIRouter, Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.metrics import PREDICTIONS_TOTAL
 
+from app.auth import get_current_user
+from app.cache import redis_client
+from app.crud import create_prediction, get_all_predictions, get_latest_flights
+from app.database import SessionLocal
 from app.metrics import (
     PREDICTIONS_TOTAL,
     FLIGHTS_CACHE_HITS,
-    FLIGHTS_CACHE_MISSES
+    FLIGHTS_CACHE_MISSES,
 )
-
 from app.ml.predictor import predict_demand
-
-from app.database import SessionLocal
 from app.schemas import PredictionRequest, PredictionResponse, FlightResponse
-from app.crud import create_prediction, get_all_predictions, get_latest_flights
+
 
 router = APIRouter()
+
 
 def get_db():
     db = SessionLocal()
@@ -25,15 +25,18 @@ def get_db():
         yield db
     finally:
         db.close()
-        
-        
-        
+
+
 @router.post("/predict", response_model=PredictionResponse)
-def predict(request: PredictionRequest, db: Session = Depends(get_db)):
+def predict(
+    request: PredictionRequest,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
     predicted_demand = predict_demand(
         origin_country=request.origin or "France",
         altitude=10000.0,
-        velocity=220.0
+        velocity=220.0,
     )
 
     prediction = create_prediction(
@@ -41,16 +44,19 @@ def predict(request: PredictionRequest, db: Session = Depends(get_db)):
         route=request.route,
         origin=request.origin,
         destination=request.destination,
-        predicted_demand=predicted_demand
+        predicted_demand=predicted_demand,
     )
-    
+
     PREDICTIONS_TOTAL.inc()
 
     return prediction
 
 
 @router.get("/predictions", response_model=list[PredictionResponse])
-def list_predictions(db: Session = Depends(get_db)):
+def list_predictions(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
     return get_all_predictions(db)
 
 

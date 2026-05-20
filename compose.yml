@@ -50,11 +50,11 @@ services:
     ports:
       - "3000:3000"
 
-  worker:
-    build: . 
-    command: remoulade app.tasks
-    depends_on:
-      - redis
-      - db
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/aircargo
+  #worker:
+    #build: . 
+    #command: remoulade app.tasks
+    #depends_on:
+      #- redis
+      #- db
+   # environment:
+      #DATABASE_URL: postgresql://postgres:password@db:5432/aircargo
