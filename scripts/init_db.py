@@ -1,0 +1,9 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.database import Base, engine
+from app.models import Prediction, Flight
+
+Base.metadata.create_all(bind=engine)
+print("Tables créées.")

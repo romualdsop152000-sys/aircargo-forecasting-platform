@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+.env/
+.envrc
+.venv/
+
+# VSCode
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Env files
+.env
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Others
+*.sqlite3
+*.db
+
+# Ignore local data
+local_data/
