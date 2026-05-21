@@ -4,21 +4,27 @@ from datetime import datetime
 
 import mlflow
 
-# Dploiement sur K8s
-#mlflow.set_tracking_uri("http://mlflow:5000")
 
-# Pour faire deployer sur render
-mlflow.set_tracking_uri(
-    os.getenv("MLFLOW_TRACKING_URI", "file:/tmp/mlruns")
-)
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:/tmp/mlruns")
+MLFLOW_EXPERIMENT_NAME = "aircargo-demand-prediction"
 
-mlflow.set_experiment("aircargo-demand-prediction")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 
 def predict_demand(origin_country: str, altitude: float, velocity: float):
+    experiment = mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME)
+
+    if experiment is None:
+        experiment_id = mlflow.create_experiment(MLFLOW_EXPERIMENT_NAME)
+    else:
+        experiment_id = experiment.experiment_id
+
     run_name = f"{origin_country}-alt{int(altitude)}-vel{int(velocity)}"
 
-    with mlflow.start_run(run_name=run_name):
+    with mlflow.start_run(
+        experiment_id=experiment_id,
+        run_name=run_name
+    ):
         mlflow.log_param("origin_country", origin_country)
         mlflow.log_param("altitude", altitude)
         mlflow.log_param("velocity", velocity)
