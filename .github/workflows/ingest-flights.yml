@@ -1,0 +1,31 @@
+name: Scheduled Flight Ingestion
+
+on:
+  schedule:
+    - cron: "*/3 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ingest-flights:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Wake up API
+        run: |
+          curl -s https://aircargo-forecasting-platform.onrender.com/ || true
+
+      - name: Login and get token
+        id: login
+        run: |
+          TOKEN=$(curl -s -X POST "https://aircargo-forecasting-platform.onrender.com/login" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "username=${{ secrets.API_USERNAME }}&password=${{ secrets.API_PASSWORD }}&grant_type=password" \
+            | python -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Trigger flight ingestion
+        run: |
+          curl -X POST "https://aircargo-forecasting-platform.onrender.com/ingest/flights?limit=50" \
+            -H "Authorization: Bearer ${{ steps.login.outputs.token }}" \
+            -H "accept: application/json"

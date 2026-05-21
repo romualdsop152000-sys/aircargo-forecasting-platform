@@ -1,6 +1,11 @@
 from prometheus_client import Counter
 
 
+FLIGHTS_INGESTED_TOTAL = Counter(
+    "aircargo_flights_ingested_total",
+    "Total number of flights ingested from OpenSky"
+)
+
 PREDICTIONS_TOTAL = Counter(
     "aircargo_predictions_total",
     "Total number of ML predictions made"

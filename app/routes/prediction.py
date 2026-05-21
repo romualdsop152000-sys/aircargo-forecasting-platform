@@ -3,6 +3,11 @@ import json
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.metrics import FLIGHTS_INGESTED_TOTAL
+
+from app.ingestion.opensky_collector import collect_flights
+from app.metrics import FLIGHTS_INGESTED_TOTAL
+
 from app.auth import get_current_user
 from app.cache import redis_client
 from app.crud import create_prediction, get_all_predictions, get_latest_flights
@@ -91,3 +96,17 @@ def list_flights(limit: int = 50, db: Session = Depends(get_db)):
         print(f"Redis cache write skipped: {e}")
 
     return result
+
+@router.post("/ingest/flights")
+def ingest_flights(
+    limit: int = 50,
+    current_user: dict = Depends(get_current_user),
+):
+    saved = collect_flights(limit=limit)
+
+    FLIGHTS_INGESTED_TOTAL.inc(saved)
+
+    return {
+        "message": "Flights collected successfully",
+        "saved": saved,
+    }
