@@ -2,7 +2,7 @@ name: Scheduled Flight Ingestion
 
 on:
   schedule:
-    - cron: "*/3 * * * *"
+    - cron: "0 */3 * * *"
   workflow_dispatch:
 
 jobs:
@@ -13,6 +13,7 @@ jobs:
       - name: Wake up API
         run: |
           curl -s https://aircargo-forecasting-platform.onrender.com/ || true
+          sleep 20
 
       - name: Login and get token
         id: login
@@ -24,8 +25,8 @@ jobs:
 
           echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
-      - name: Trigger flight ingestion
+      - name: Trigger OpenSky flight ingestion
         run: |
-          curl -X POST "https://aircargo-forecasting-platform.onrender.com/ingest/flights?limit=50" \
+          curl -X POST "https://aircargo-forecasting-platform.onrender.com/ingest/flights?limit=10" \
             -H "Authorization: Bearer ${{ steps.login.outputs.token }}" \
             -H "accept: application/json"

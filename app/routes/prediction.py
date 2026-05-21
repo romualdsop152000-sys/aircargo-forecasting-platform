@@ -3,6 +3,8 @@ import json
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from fastapi import HTTPException
+
 from app.metrics import FLIGHTS_INGESTED_TOTAL
 
 from app.ingestion.opensky_collector import collect_flights
@@ -12,11 +14,13 @@ from app.auth import get_current_user
 from app.cache import redis_client
 from app.crud import create_prediction, get_all_predictions, get_latest_flights
 from app.database import SessionLocal
+
 from app.metrics import (
     PREDICTIONS_TOTAL,
     FLIGHTS_CACHE_HITS,
     FLIGHTS_CACHE_MISSES,
 )
+
 from app.ml.predictor import predict_demand
 from app.schemas import PredictionRequest, PredictionResponse, FlightResponse
 
@@ -64,6 +68,29 @@ def list_predictions(
 ):
     return get_all_predictions(db)
 
+@router.post("/ingest/flights")
+def ingest_flights(
+    limit: int = 20,
+    current_user: dict = Depends(get_current_user),
+):
+    try:
+        saved = collect_flights(limit=limit)
+
+        FLIGHTS_INGESTED_TOTAL.inc(saved)
+
+        return {
+            "message": "Real flights collected successfully from OpenSky",
+            "saved": saved,
+        }
+
+    except Exception as e:
+        print(f"Flight ingestion failed: {e}")
+
+        raise HTTPException(
+            status_code=503,
+            detail=str(e),
+        )
+
 
 @router.get("/flights", response_model=list[FlightResponse])
 def list_flights(limit: int = 50, db: Session = Depends(get_db)):
@@ -96,17 +123,3 @@ def list_flights(limit: int = 50, db: Session = Depends(get_db)):
         print(f"Redis cache write skipped: {e}")
 
     return result
-
-@router.post("/ingest/flights")
-def ingest_flights(
-    limit: int = 50,
-    current_user: dict = Depends(get_current_user),
-):
-    saved = collect_flights(limit=limit)
-
-    FLIGHTS_INGESTED_TOTAL.inc(saved)
-
-    return {
-        "message": "Flights collected successfully",
-        "saved": saved,
-    }
