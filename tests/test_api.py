@@ -38,8 +38,14 @@ def test_metrics():
 
 
 def test_get_flights(monkeypatch):
-    monkeypatch.setattr(prediction.redis_client, "get", lambda key: None)
-    monkeypatch.setattr(prediction.redis_client, "setex", lambda key, ttl, value: True)
+    class MockRedis:
+        def get(self, key):
+            return None
+
+        def setex(self, key, ttl, value):
+            return True
+
+    monkeypatch.setattr(prediction, "redis_client", MockRedis())
 
     monkeypatch.setattr(
         prediction,
