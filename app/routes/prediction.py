@@ -65,7 +65,7 @@ def list_flights(limit: int = 50, db: Session = Depends(get_db)):
     cache_key = f"latest_flights:{limit}"
 
     try:
-        if redis_client:
+        if redis_client is not None:
             cached_data = redis_client.get(cache_key)
 
             if cached_data:
@@ -85,7 +85,7 @@ def list_flights(limit: int = 50, db: Session = Depends(get_db)):
     ]
 
     try:
-        if redis_client:
+        if redis_client is not None:
             redis_client.setex(cache_key, 60, json.dumps(result))
     except Exception as e:
         print(f"Redis cache write skipped: {e}")
