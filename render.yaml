@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: aircargo-forecasting-api
+    env: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT_NUMBER
+        value: "6379"
+      - key: MLFLOW_TRACKING_URI
+        value: "file:/tmp/mlruns"

@@ -64,11 +64,16 @@ def list_predictions(
 def list_flights(limit: int = 50, db: Session = Depends(get_db)):
     cache_key = f"latest_flights:{limit}"
 
-    cached_data = redis_client.get(cache_key)
+    try:
+        if redis_client:
+            cached_data = redis_client.get(cache_key)
 
-    if cached_data:
-        FLIGHTS_CACHE_HITS.inc()
-        return json.loads(cached_data)
+            if cached_data:
+                FLIGHTS_CACHE_HITS.inc()
+                return json.loads(cached_data)
+
+    except Exception as e:
+        print(f"Redis cache unavailable: {e}")
 
     FLIGHTS_CACHE_MISSES.inc()
 
@@ -79,6 +84,10 @@ def list_flights(limit: int = 50, db: Session = Depends(get_db)):
         for flight in flights
     ]
 
-    redis_client.setex(cache_key, 60, json.dumps(result))
+    try:
+        if redis_client:
+            redis_client.setex(cache_key, 60, json.dumps(result))
+    except Exception as e:
+        print(f"Redis cache write skipped: {e}")
 
     return result

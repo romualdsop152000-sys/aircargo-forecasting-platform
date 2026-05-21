@@ -1,30 +1,41 @@
+import os
+import random
 from datetime import datetime
 
-import joblib
-import pandas as pd
+import mlflow
+
+# Dploiement sur K8s
+#mlflow.set_tracking_uri("http://mlflow:5000")
+
+# Pour faire deployer sur render
+mlflow.set_tracking_uri(
+    os.getenv("MLFLOW_TRACKING_URI", "file:/tmp/mlruns")
+)
+
+mlflow.set_experiment("aircargo-demand-prediction")
 
 
-model = joblib.load("app/ml/model.pkl")
-encoder = joblib.load("app/ml/encoder.pkl")
+def predict_demand(origin_country: str, altitude: float, velocity: float):
+    run_name = f"{origin_country}-alt{int(altitude)}-vel{int(velocity)}"
 
+    with mlflow.start_run(run_name=run_name):
+        mlflow.log_param("origin_country", origin_country)
+        mlflow.log_param("altitude", altitude)
+        mlflow.log_param("velocity", velocity)
 
-def predict_demand(origin_country: str, altitude: float, velocity: float) -> float:
-    hour = datetime.utcnow().hour
+        hour = datetime.utcnow().hour
 
-    if origin_country in encoder.classes_:
-        country_encoded = encoder.transform([origin_country])[0]
-    else:
-        country_encoded = 0
+        base_demand = (
+            altitude * 0.1
+            + velocity * 5
+            + random.uniform(1000, 5000)
+        )
 
-    X = pd.DataFrame(
-        [{
-            "country_encoded": country_encoded,
-            "altitude": altitude,
-            "velocity": velocity,
-            "hour": hour,
-        }]
-    )
+        if 6 <= hour <= 18:
+            base_demand *= 1.2
 
-    prediction = model.predict(X)[0]
+        prediction = round(base_demand, 2)
 
-    return round(float(prediction), 2)
+        mlflow.log_metric("predicted_demand", prediction)
+
+        return prediction

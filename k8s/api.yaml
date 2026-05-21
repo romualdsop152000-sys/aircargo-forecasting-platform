@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aircargo-api
+  namespace: aircargo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aircargo-api
+  template:
+    metadata:
+      labels:
+        app: aircargo-api
+    spec:
+      containers:
+        - name: aircargo-api
+          image: aircargo-api:latest
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:password@postgres:5432/aircargo
+
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT_NUMBER
+              value: "6379"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aircargo-api
+  namespace: aircargo
+spec:
+  type: NodePort
+
+  selector:
+    app: aircargo-api
+
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30080

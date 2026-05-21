@@ -1,80 +1,222 @@
+
 # ✈️ AirCargo Forecasting Platform
+![CI](https://github.com/romualdsop152000-sys/aircargo-forecasting-platform/actions/workflows/ci.yml/badge.svg)
 
-A production-oriented MLOps/Data Engineering platform for real-time air cargo monitoring and forecasting using FastAPI, PostgreSQL, Redis, Prometheus, and Grafana.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-green)
+![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestration-326CE5)
+![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)
+![Redis](https://img.shields.io/badge/Redis-Cache-red)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange)
+![JWT](https://img.shields.io/badge/Auth-JWT-black)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+A complete MLOps-ready Air Cargo Demand Forecasting platform built with:
+
+- FastAPI
+- PostgreSQL
+- Redis
+- MLflow
+- Prometheus
+- Docker
+- Kubernetes (Kind)
+- GitHub Actions CI/CD
+- JWT Authentication
+- Pytest
 
 ---
 
-![Build](https://img.shields.io/github/actions/workflow/status/romualdleo/aircargo-forecasting/ci.yml?branch=main)
-![Coverage](https://img.shields.io/codecov/c/github/romualdleo/aircargo-forecasting)
-![License](https://img.shields.io/github/license/romualdleo/aircargo-forecasting)
-![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+# 🚀 Features
 
----
+## API
 
-# 🚀 Project Overview
+- Air cargo demand prediction
+- REST API with FastAPI
+- Swagger/OpenAPI documentation
+- JWT Authentication
 
-This project simulates a modern data platform capable of:
+## Data Layer
 
-* ingesting real-time flight data from the OpenSky API,
-* storing and querying flight information,
-* exposing REST APIs for predictions and analytics,
-* caching responses with Redis,
-* monitoring services with Prometheus and Grafana,
-* testing APIs with pytest,
-* containerizing the entire stack using Docker Compose.
+- PostgreSQL persistence
+- Redis caching layer
 
-The platform is designed with scalable MLOps and Data Engineering practices in mind.
+## MLOps
+
+- MLflow experiment tracking
+- Metrics logging
+- Parameters tracking
+- Kubernetes deployment
+
+## Monitoring
+
+- Prometheus metrics
+- API observability
+
+## DevOps
+
+- Docker Compose
+- Kubernetes manifests
+- GitHub Actions CI/CD
+- Automated testing with Pytest
 
 ---
 
 # 🏗️ Architecture
 
 ```text
-                              ┌──────────────────┐
-                              │  OpenSky API     │
-                              └────────┬─────────┘
-                                           │
-                                           ▼
-                           ┌────────────────────┐
-                           │  Ingestion Service │
-                           └────────┬───────────┘
-                                        │
-                                        ▼
-                           ┌────────────────────┐
-                           │   PostgreSQL DB    │
-                           └────────┬───────────┘
-                                        │
-               ┌────────────────┴────────────────┐
-               ▼                                 ▼
- ┌────────────────┐               ┌────────────────┐
- │ FastAPI API    │               │ Redis Cache    │
- └───────┬────────┘               └────────────────┘
-             │
-             ▼
- ┌──────────────────────┐
- │ Prometheus Metrics   │
- └─────────┬────────────┘
-                ▼
- ┌──────────────────────┐
- │ Grafana Dashboards   │
- └──────────────────────┘
+                +------------------+
+                |     Client       |
+                +------------------+
+                          |
+                          v
+                +------------------+
+                |    FastAPI API   |
+                +------------------+
+                  |      |      |
+                  |      |      |
+                  v      v      v
+             PostgreSQL Redis MLflow
+                  |
+                  v
+             Prometheus
 ```
 
 ---
 
-# ⚙️ Tech Stack
+# 📦 Tech Stack
 
-| Category         | Technologies            |
-| ---------------- | ----------------------- |
-| Backend API      | FastAPI                 |
-| Database         | PostgreSQL              |
-| Cache            | Redis                   |
-| Monitoring       | Prometheus + Grafana    |
-| Testing          | pytest                  |
-| ORM              | SQLAlchemy              |
-| Containerization | Docker + Docker Compose |
-| Data Source      | OpenSky Network API     |
-| Language         | Python 3.11+            |
+| Layer | Technology |
+|---|---|
+| Backend | FastAPI |
+| Database | PostgreSQL |
+| Cache | Redis |
+| ML Tracking | MLflow |
+| Monitoring | Prometheus |
+| Containerization | Docker |
+| Orchestration | Kubernetes |
+| CI/CD | GitHub Actions |
+| Testing | Pytest |
+
+---
+
+# 🔐 Authentication
+
+JWT Authentication is enabled.
+
+## Login Endpoint
+
+```http
+POST /login
+```
+
+Use:
+
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+---
+
+# ⚙️ Local Development
+
+## Start services
+
+```bash
+docker compose up --build
+```
+
+## Run API
+
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+# 🧪 Testing
+
+Run tests:
+
+```bash
+pytest
+```
+
+---
+
+# 📊 MLflow
+
+Start MLflow UI:
+
+```bash
+mlflow ui
+```
+
+Access:
+
+```text
+http://localhost:5000
+```
+
+---
+
+# ☸️ Kubernetes Deployment
+
+## Create cluster
+
+```bash
+kind create cluster
+```
+
+## Deploy
+
+```bash
+kubectl apply -f k8s/
+```
+
+## Port Forward
+
+API:
+
+```bash
+kubectl port-forward -n aircargo deployment/aircargo-api 8081:8000
+```
+
+MLflow:
+
+```bash
+kubectl port-forward -n aircargo svc/mlflow 5001:5000
+```
+
+---
+
+# 📈 Prometheus Metrics
+
+Metrics endpoint:
+
+```text
+/metrics
+```
+
+---
+
+# 🔄 CI/CD
+
+GitHub Actions automatically:
+
+- installs dependencies
+- runs tests
+- validates code
+
+Workflow file:
+
+```text
+.github/workflows/ci.yml
+```
 
 ---
 
@@ -84,219 +226,109 @@ The platform is designed with scalable MLOps and Data Engineering practices in m
 aircargo-forecasting/
 │
 ├── app/
-│   ├── routes/
-│   ├── ml/
-│   ├── database.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── crud.py
-│   └── main.py
-│
-├── monitoring/
-│   └── prometheus.yml
-│
-├── scripts/
-│   └── ingest_opensky.py
-│
 ├── tests/
-│   └── test_api.py
-│
-├── compose.yml
+├── k8s/
+├── .github/workflows/
 ├── Dockerfile
+├── compose.yml
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-# 📡 API Endpoints
 
-## Root Endpoint
 
-```http
-GET /
-```
+# 📸 Screenshots & Project Walkthrough
 
-Response:
+Découvrez ci-dessous les principaux composants de la plateforme AirCargo Forecasting, illustrés par des captures réelles du projet en fonctionnement.
 
-```json
-{
-   "message": "Welcome to AirCargo Forecast API"
-}
-```
+## 1. API Documentation (Swagger / OpenAPI)
+L’API REST est documentée automatiquement grâce à FastAPI et Swagger. Vous pouvez explorer, tester les endpoints, et visualiser les schémas d’entrée/sortie.
 
----
+**Exemple d’interface Swagger :**
+![Swagger 1](docs/images/swagger_1.png)
 
-## Flight Predictions
+**Exemple de formulaire d’authentification :**
+![Swagger 2](docs/images/swagger_2.png)
 
-```http
-POST /predict
-```
+**Réponse d’authentification JWT :**
+![Swagger 3](docs/images/swagger_3.png)
 
-Request:
+**Endpoint de prédiction :**
+![Swagger 4](docs/images/swagger_4.png)
 
-```json
-{
-   "route": "Paris-Dubai",
-   "origin": "France",
-   "destination": "Dubai"
-}
-```
+**Réponse de prédiction :**
+![Swagger 5](docs/images/swagger_5.png)
+
+**Endpoint de listing des vols :**
+![Swagger 6](docs/images/swagger_6.png)
+
+**Réponse du listing :**
+![Swagger 7](docs/images/swagger_7.png)
 
 ---
 
-## Latest Flights
+## 2. MLflow Experiment Tracking
+MLflow permet de suivre les expériences de machine learning, les paramètres, les métriques et les résultats de prédiction.
 
-```http
-GET /flights?limit=10
-```
 
----
+**Vue d’un run MLflow :**
+![MLflow 1](docs/images/mlflow_1.png)
 
-## Metrics
-
-```http
-GET /metrics
-```
-
-Prometheus metrics endpoint.
+**Visualisation des métriques :**
+![MLflow 2](docs/images/mlflow_2.png)
 
 ---
 
-# 📊 Monitoring
+## 3. Monitoring & Observabilité
+La plateforme intègre Prometheus pour la collecte de métriques et Grafana pour la visualisation.
 
-The platform includes:
 
-* Prometheus metrics collection
-* Grafana dashboards
-* Request monitoring
-* API latency monitoring
-* Redis cache metrics
-* Prediction counters
+**Cible Prometheus (API FastAPI exposée) :**
+![Prometheus Target](docs/images/Promotheus.png)
 
-## Example Metrics
+**Graphique Prometheus :**
+![Prometheus Graph](docs/images/Promotheus_1.PNG)
 
-```text
-http_requests_total
-http_request_duration_seconds
-aircargo_predictions_total
-aircargo_flights_cache_hits_total
-aircargo_flights_cache_misses_total
-```
+**Dashboard Grafana :**
+![Grafana](docs/images/grafana.png)
 
 ---
 
-# 🧪 Automated Testing
+## 4. CI/CD avec GitHub Actions
+Chaque push déclenche des tests automatiques, l’installation des dépendances et la validation du code.
 
-The project uses pytest for API testing.
-
-## Run tests
-
-```bash
-pytest
-```
-
-## Tested Endpoints
-
-* `/`
-* `/metrics`
-* `/flights`
-* `/predict`
+**Exemple de workflow réussi :**
+![GitHub Actions](docs/images/github-actions.png)
 
 ---
 
-# 🐳 Docker Deployment
+## 5. Orchestration Kubernetes
+Déploiement multi-services (API, MLflow, Postgres, Redis) sur un cluster local avec Kind.
 
-## Start the platform
 
-```bash
-docker compose up --build
-```
+**Pods déployés :**
+![K8s Pods](docs/images/k8s_1.png)
 
-## Available Services
-
-| Service      | URL                                                      |
-| ------------ | -------------------------------------------------------- |
-| FastAPI      | [http://localhost:8000](http://localhost:8000)           |
-| Swagger Docs | [http://localhost:8000/docs](http://localhost:8000/docs) |
-| Prometheus   | [http://localhost:9090](http://localhost:9090)           |
-| Grafana      | [http://localhost:3000](http://localhost:3000)           |
-| PostgreSQL   | localhost:5432                                           |
-| Redis        | localhost:6379                                           |
-
----
-
-# 📈 Current Features
-
-## ✅ Completed
-
-* FastAPI REST API
-* PostgreSQL integration
-* OpenSky ingestion pipeline
-* Redis caching
-* Prometheus metrics
-* Grafana dashboards
-* Docker Compose infrastructure
-* Automated tests with pytest
-
-## 🚧 Planned Features
-
-* JWT Authentication
-* MLflow experiment tracking
-* Kubernetes deployment
-* CI/CD GitHub Actions
-* Cloud deployment (AWS/GCP/Render)
-* Background task orchestration
-
----
-
-# 🔒 Future Improvements
-
-## Authentication
-
-JWT-based authentication for secured endpoints.
-
-## MLOps
-
-* MLflow experiment tracking
-* model versioning
-* automated retraining
-
-## Scalability
-
-* Kubernetes orchestration
-* horizontal scaling
-* CI/CD pipelines
-
----
-
-# 📷 Screenshots
-
-## Swagger API
-
-*Add Swagger screenshot here.*
-
-## Grafana Dashboard
-
-*Add Grafana dashboard screenshot here.*
+**Services exposés :**
+![K8s Services](docs/images/k8s_2.png)
 
 ---
 
 # 👨‍💻 Author
 
-**Romuald Leo**
-
-PhD in Physics • AI & MLOps Engineering • Data Engineering • Quantum Technologies
+Romuald Leo  
+PhD Physics • AI & MLOps Engineer
 
 ---
 
-# ⭐ Project Goals
+# ⭐ Future Improvements
 
-This project aims to demonstrate:
-
-* production-ready API development,
-* real-time data ingestion,
-* monitoring and observability,
-* scalable MLOps architecture,
-* containerized infrastructure,
-* testing and automation best practices.
+- Real ML model training pipeline
+- Grafana dashboards
+- Helm charts
+- Cloud deployment (AWS/GCP)
+- Feature Store
+- Airflow orchestration
+- Model Registry
