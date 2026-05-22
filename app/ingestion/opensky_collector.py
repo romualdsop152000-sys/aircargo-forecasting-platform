@@ -19,7 +19,7 @@ FRANCE_BBOX = {
 }
 
 
-def fetch_opensky_states(limit: int = 20):
+def fetch_opensky_states(limit: int = 30):
     """
     Fetch real aircraft states from OpenSky API.
     No fallback data is used.
@@ -96,7 +96,7 @@ def save_flights(states):
     return saved
 
 
-def collect_flights(limit: int = 20):
+def collect_flights(limit: int = 30):
     """
     Collect real flight data from OpenSky and persist it.
     """
@@ -114,5 +114,5 @@ def collect_flights(limit: int = 20):
 
 
 if __name__ == "__main__":
-    limit = int(os.getenv("OPENSKY_LIMIT", 20))
+    limit = int(os.getenv("OPENSKY_LIMIT", 30))
     collect_flights(limit=limit)

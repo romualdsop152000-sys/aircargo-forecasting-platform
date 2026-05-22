@@ -70,7 +70,7 @@ def list_predictions(
 
 @router.post("/ingest/flights")
 def ingest_flights(
-    limit: int = 20,
+    limit: int = 30,
     current_user: dict = Depends(get_current_user),
 ):
     try:
