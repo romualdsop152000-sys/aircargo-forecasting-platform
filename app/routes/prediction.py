@@ -8,7 +8,6 @@ from fastapi import HTTPException
 from app.metrics import FLIGHTS_INGESTED_TOTAL
 
 from app.ingestion.opensky_collector import collect_flights
-from app.metrics import FLIGHTS_INGESTED_TOTAL
 
 from app.auth import get_current_user
 from app.cache import redis_client
@@ -19,6 +18,7 @@ from app.metrics import (
     PREDICTIONS_TOTAL,
     FLIGHTS_CACHE_HITS,
     FLIGHTS_CACHE_MISSES,
+    FLIGHTS_INGESTED_TOTAL,
 )
 
 from app.ml.predictor import predict_demand
