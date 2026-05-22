@@ -2,7 +2,7 @@ name: Scheduled Flight Ingestion
 
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 jobs:
@@ -18,10 +18,20 @@ jobs:
       - name: Login and get token
         id: login
         run: |
-          TOKEN=$(curl -s -X POST "https://aircargo-forecasting-platform.onrender.com/login" \
+          RESPONSE=$(curl -s -X POST "https://aircargo-forecasting-platform.onrender.com/login" \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "username=${{ secrets.API_USERNAME }}&password=${{ secrets.API_PASSWORD }}&grant_type=password" \
-            | python -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+            -d "username=${{ secrets.API_USERNAME }}&password=${{ secrets.API_PASSWORD }}&grant_type=password")
+
+          echo "Login response:"
+          echo "$RESPONSE"
+
+          TOKEN=$(echo "$RESPONSE" | python -c "
+import sys, json
+data = json.load(sys.stdin)
+if 'access_token' not in data:
+    raise Exception(f'No access_token found in response: {data}')
+print(data['access_token'])
+")
 
           echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
